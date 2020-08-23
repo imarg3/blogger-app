@@ -1,21 +1,40 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+// In App.js in a new project
 
-export default function App() {
+import * as React from "react";
+import { View, Text } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { Provider as BlogProvider } from "./src/context/BlogContext";
+import IndexScreen from "./src/screens/IndexScreen";
+import ShowScreen from "./src/screens/ShowScreen";
+import CreateScreen from "./src/screens/CreateScreen";
+
+const Stack = createStackNavigator();
+
+function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <BlogProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Index">
+          <Stack.Screen
+            name="Index"
+            component={IndexScreen}
+            options={{ title: "Blogs" }}
+          />
+          <Stack.Screen
+            name="Show"
+            component={ShowScreen}
+            options={{ title: "Show Blogs" }}
+          />
+          <Stack.Screen
+            name="Create"
+            component={CreateScreen}
+            options={{ title: "Create Blog" }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </BlogProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
