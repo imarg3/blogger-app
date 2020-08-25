@@ -1,4 +1,5 @@
 import createDataContext from "./createDataContext";
+import api from "../api/callAPI";
 
 const blogReducer = (state, action) => {
   switch (action.type) {
@@ -17,28 +18,44 @@ const blogReducer = (state, action) => {
       return state.map((blogPost) => {
         return blogPost.id === action.payload.id ? action.payload : blogPost;
       });
+    case "get_blogposts":
+      return action.payload;
     default:
       return state;
   }
 };
 
+const getBlogPosts = (dispatch) => {
+  return async () => {
+    const response = await api.get("/blogposts");
+
+    dispatch({ type: "get_blogposts", payload: response.data });
+  };
+};
+
 const addBlogPost = (dispatch) => {
-  return (title, content, callback) => {
-    dispatch({ type: "add_blogpost", payload: { title, content } });
+  return async (title, content, callback) => {
+    await api.post("/blogposts", { title, content });
+
+    /* dispatch({ type: "add_blogpost", payload: { title, content } });
     if (callback) {
       callback();
-    }
+    } */
   };
 };
 
 const deleteBlogPost = (dispatch) => {
-  return (id) => {
+  return async (id) => {
+    await api.delete(`/blogposts/${id}`);
+
     dispatch({ type: "delete_blogpost", payload: id });
   };
 };
 
 const editBlogPost = (dispatch) => {
-  return (id, title, content, callback) => {
+  return async (id, title, content, callback) => {
+    await api.put(`/blogposts/${id}`, { title, content });
+
     dispatch({ type: "edit_blogpost", payload: { id, title, content } });
     if (callback) {
       callback();
@@ -48,6 +65,6 @@ const editBlogPost = (dispatch) => {
 
 export const { Context, Provider } = createDataContext(
   blogReducer,
-  { addBlogPost, deleteBlogPost, editBlogPost },
+  { addBlogPost, deleteBlogPost, editBlogPost, getBlogPosts },
   []
 );
